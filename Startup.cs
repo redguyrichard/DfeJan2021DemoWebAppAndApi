@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DfeJan2021DemoWebAppAndApi.Database;
 
 namespace DfeJan2021DemoWebAppAndApi
 {
@@ -28,6 +29,9 @@ namespace DfeJan2021DemoWebAppAndApi
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            // SQL Server DB
+            services.AddScoped<ISqlServerRepository>(s => new SqlServerRepository(Configuration["SqlServerConnectionString"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,9 +56,7 @@ namespace DfeJan2021DemoWebAppAndApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>

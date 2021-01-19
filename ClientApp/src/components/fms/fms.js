@@ -5,20 +5,18 @@ import DatePicker from '../data-picker/data-picker';
 class Fms extends Component {
     constructor() {
         super();
-
         this.state = {
             loaded: false,
         };
     }
 
     componentDidMount() {
-        fetch('https://dfejan2021demoapi.azurewebsites.net/api/snapshot')
+        //fetch('https://dfejan2021demoapi.azurewebsites.net/api/snapshot')
+        fetch('/api/snapshot/90000001')
         .then(response => response.json())
         .then(data => {
             // sort data
             data.sort((a, b) => a.date.localeCompare(b.date));
-
-            console.log(data);
 
             // get academies
             const academyUpins = data[0].academies.map(academy => academy.academyUpin);
@@ -46,8 +44,9 @@ class Fms extends Component {
         if (!this.state.formData.find(item => item.date === this.state.date)) {
             return 0;
         } else if (location === 'academyCoaData') {
-            const academyLevelValue = this.state.formData.find(item => item.date === this.state.date).academies.find(academy => academy.academyUpin === this.state.academyUpinSelected).academyCoaData[field]
-            return academyLevelValue ? academyLevelValue : 0;
+            const academyData = this.state.formData.find(item => item.date === this.state.date).academies.find(academy => academy.academyUpin === this.state.academyUpinSelected);
+            if (academyData && academyData.academyCoaData[field]) return academyData.academyCoaData[field];
+            return 0;
         }
 
         const trustLevelValue = this.state.formData.find(item => item.date === this.state.date)[location][field];
@@ -56,14 +55,65 @@ class Fms extends Component {
 
     updateField(location, field, value) {
         const formData = this.state.formData;
+        let snapshot = formData.find(snapshot => snapshot.date === this.state.date);
+
+        if (!snapshot) {
+            // A data snapshot does not exist for this month... create one
+            snapshot = {
+                date: this.state.date,
+                trustCoaData: null,
+                academies: []
+            };
+            formData.push(snapshot);
+        }
 
         if (location === 'academyCoaData') {
-            formData.academies.find(academy => academy.academyUpin === this.state.academyUpinSelected)[location][field] = value;
+            let academy = snapshot.academies.find(academy => academy.academyUpin === this.state.academyUpinSelected);
+
+            if (!academy) {
+                academy = {
+                    academyUpin: this.state.academyUpinSelected,
+                    academyCoaData: {}
+                };
+                snapshot.academies.push(academy);
+            }
+            academy[location][field] = Number(value);
         } else {
-            formData[location][field] = value;
+            snapshot[location][field] = Number(value);
         }
 
         this.setState({ formData });
+    }
+
+    save()
+    {
+        // console.log(this.state);
+        const currMonthformData = this.state.formData.find(item => item.date === this.state.date);
+        console.log(currMonthformData);
+
+        if (currMonthformData) {
+            fetch('/api/snapshot/90000001', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(currMonthformData)
+            });
+        }
+
+        //let acDataArray = [];
+        //acDataArray.push(currMonthformData.academies[0]);
+        //acDataArray.push(currMonthformData.academies[0]);
+        //acDataArray.push(currMonthformData.academies[0]);
+
+        //let mySnapShot = {
+        //    date: "2020-01-01T00:00:00",
+        //    trustCoaData: null,
+        //    academies: acDataArray
+        //}
+
+        //console.log(currMonthformData, mySnapShot);
+        // debugger;
     }
 
     render() {
@@ -83,7 +133,7 @@ class Fms extends Component {
             <Container style={{backgroundColor: '#fff', minHeight: '100vh', paddingTop: '1rem'}}>
                 <Row>
                     <Col><DatePicker changeDate={this.changeDate.bind(this)}></DatePicker></Col>
-                    <Col><Button style={{float: 'right'}} variant="success">Save</Button></Col>
+                    <Col><Button style={{ float: 'right' }} variant="success" onClick={event => this.save()}>Save</Button></Col>
                 </Row>
                 <hr></hr>
                 <h1>Financial Management System</h1>
@@ -108,11 +158,11 @@ class Fms extends Component {
                                 <Tab.Pane eventKey="home">
                                     <Row className="my-1">
                                         <Col sm="2"><b>Trust UPIN:</b></Col>
-                                        <Col>00001</Col>
+                                        <Col>90000001</Col>
                                     </Row>
                                     <Row className="my-1">
                                         <Col sm="2"><b>Trust name:</b></Col>
-                                        <Col>Nameoftrust</Col>
+                                        <Col>Pepsitown Trust</Col>
                                     </Row>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="trust"></Tab.Pane>
