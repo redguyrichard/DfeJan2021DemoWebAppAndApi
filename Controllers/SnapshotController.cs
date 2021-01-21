@@ -77,26 +77,23 @@ namespace DfeJan2021DemoWebAppAndApi.Controllers
         //public IEnumerable<Snapshot> Post(int id, IEnumerable<Snapshot> snapshots)
         // public IActionResult Post([FromBody]OwnerForCreationDto owner)
         //public IActionResult Put(int id, IEnumerable<Snapshot> snapshots)
-        public IActionResult Put(int id, Snapshot snapshots)
+        public IActionResult Put(int id, Snapshot snapshot)
         {
             try
             {
-                // if (id != employee.EmployeeId) return BadRequest("Employee ID mismatch");
-                // var employeeToUpdate = await employeeRepository.GetEmployee(id);
-                // if (employeeToUpdate == null) return NotFound($"Employee with Id = {id} not found");
+                var snapshots = snapshot.Academies
+                    .SelectMany(acData => acData.AcademyCoaData, (acData, coaAccount) => new { acData, coaAccount })
+                    .Select(snap =>
+                        new DataSnapshot
+                        {
+                            SnapshotDate = snapshot.Date,
+                            TrustUkprn = id,
+                            AcademyUpin = snap.acData.AcademyUpin,
+                            CoaAccount = Int32.Parse(snap.coaAccount.Key),
+                            CoaAccountValue = snap.coaAccount.Value,
+                        });
 
-                // Dapper Contrib example
-                //using (SqlConnection connection = new SqlConnection(connectionString))
-                //{
-                //    var eventId = 1;
-                //    var myEvent = connection.Get<Event>(eventId);
-                //    myEvent.EventName = "New Name";
-                //    connection.Update(myEvent);
-                //}
-
-                return new OkObjectResult(snapshots);
-                //return CreatedAtRoute("snapshotbyid", snapshots);
-
+                return new OkObjectResult(_sqlServerRepository.UpsertDataSnapShots(id, snapshots));
             }
             catch (Exception ex)
             {

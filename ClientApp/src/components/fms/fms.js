@@ -196,6 +196,27 @@ class Fms extends Component {
                                                 <Form.Label>Support staff:Wages and salaries</Form.Label>
                                                 <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '650550')} onChange={event => this.updateField('academyCoaData', '650550', event.target.value)} />
                                             </Form.Group>
+                                            <h2 className="h4" style={{ padding: '1rem 0' }}>Overtime</h2>
+                                            <Form.Group>
+                                                <Form.Label>Teaching Assistants</Form.Label>
+                                                <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '615150')} onChange={event => this.updateField('academyCoaData', '615150', event.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Finance and Admin</Form.Label>
+                                                <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '625150')} onChange={event => this.updateField('academyCoaData', '625150', event.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Site Staff</Form.Label>
+                                                <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '627150')} onChange={event => this.updateField('academyCoaData', '627150', event.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Catering Staff</Form.Label>
+                                                <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '632150')} onChange={event => this.updateField('academyCoaData', '632150', event.target.value)} />
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Other Staff</Form.Label>
+                                                <Form.Control type="number" placeholder="0" value={this.getFieldValue('academyCoaData', '647150')} onChange={event => this.updateField('academyCoaData', '647150', event.target.value)} />
+                                            </Form.Group>
                                         </Tab>
                                         <Tab eventKey="suppliesServicesCosts" title="Supplies &amp; Services Costs">
                                             <h2 className="h4" style={{padding: '1rem 0'}}>Bought in supply cover</h2>
